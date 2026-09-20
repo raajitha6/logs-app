@@ -182,3 +182,36 @@
     border-right-color: var(--border);
   }
 }
+
+.books.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.books.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+:root {
+  --app-bg: #ffffff;
+  --app-text: #111111;
+}
+
+[data-theme="dark"] {
+  --app-bg: #121212;
+  --app-text: #eeeeee;
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+.book-card {
+  border: 1px solid currentColor;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
