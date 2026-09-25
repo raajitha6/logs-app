@@ -75,44 +75,91 @@ function App() {
 
   return (
     <>
+      <div className='topbar'>
       <h1>My Bookshelf</h1>
-      <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+      <button className='theme-toggle' onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
         {theme === "light" ? "Dark mode" : "Light mode"}
       </button>
-
-      <form onSubmit={handleSubmit}>
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="read">Read</option>
-          <option value="want">Want to read</option>
-        </select>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required />
-        <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Author" />
-        {status === "read" && (
-          <>
-            <input
-              type="number"
-              min="1"
-              max="5"
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-            />
-            <textarea
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-              placeholder="Share your thoughts"
-            />
-            <input type="date" value={dateRead} onChange={(e) => setDateRead(e.target.value)} />
-          </>
-        )}
-        <button type="submit">{editingId !== null ? "Save" : "Add"}</button>
-      </form>
-
-      <div>
-        <button onClick={() => setShelf("read")}>Diary</button>
-        <button onClick={() => setShelf("want")}>Readlist</button>
-        <button onClick={() => setView("list")}>List</button>
-        <button onClick={() => setView("grid")}>Grid</button>
       </div>
+
+      <form onSubmit={handleSubmit} className="book-form">
+				<div className="form-row">
+					<div className="form-group">
+						<label>Status</label>
+						<select value={status} onChange={(e) => setStatus(e.target.value)}>
+							<option value="read">Read</option>
+							<option value="want">Want to read</option>
+						</select>
+					</div>
+					<div className="form-group">
+						<label>Title</label>
+						<input
+							value={title}
+							onChange={(e) => setTitle(e.target.value)}
+							placeholder="Book title"
+							required
+						/>
+					</div>
+					<div className="form-group">
+						<label>Author</label>
+						<input
+							value={author}
+							onChange={(e) => setAuthor(e.target.value)}
+							placeholder="Author name"
+						/>
+					</div>
+				</div>
+				{status === "read" && (
+					<div className="form-row">
+						<div className="form-group form-group-small">
+							<label>Rating</label>
+							<input
+								type="number"
+								min="1"
+								max="5"
+								value={rating}
+								onChange={(e) => setRating(Number(e.target.value))}
+							/>
+						</div>
+						<div className="form-group form-group-small">
+							<label>Date read</label>
+							<input
+								type="date"
+								value={dateRead}
+								onChange={(e) => setDateRead(e.target.value)}
+							/>
+						</div>
+						<div className="form-group form-group-wide">
+							<label>Review</label>
+							<textarea
+								value={review}
+								onChange={(e) => setReview(e.target.value)}
+								placeholder="Share your thoughts"
+							/>
+						</div>
+					</div>
+				)}
+				<button type="submit" className="btn-primary">
+					{editingId !== null ? "Save" : "Add"}
+				</button>
+			</form>
+			<div className="tabs">
+				<button className={shelf === "read" ? "active" : ""} onClick={() => setShelf("read")}>
+					Diary
+				</button>
+				<button className={shelf === "want" ? "active" : ""} onClick={() => setShelf("want")}>
+					Readlist
+				</button>
+			</div>
+			<div className="tabs tabs-secondary">
+				<button className={view === "list" ? "active" : ""} onClick={() => setView("list")}>
+					List
+				</button>
+				<button className={view === "grid" ? "active" : ""} onClick={() => setView("grid")}>
+					Grid
+				</button>
+			</div>
+
 
       <div className={`books ${view}`}>
         {shelfBooks.map((book) => (
