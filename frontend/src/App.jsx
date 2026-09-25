@@ -2,6 +2,30 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import BookCard from './BookCard'
 
+const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+
+function groupDiaryByMonth(books) {
+  const groups = {}
+  books.forEach((book) => {
+    if (!book.dateRead) return
+    const [year, month, day] = book.dateRead.split("-")
+    const key = `${year}-${month}`
+    if (!groups[key]) groups[key] = {}
+    if (!groups[key][day]) groups[key][day] = []
+    groups[key][day].push(book)
+  })
+
+  return Object.keys(groups)
+    .sort((a, b) => b.localeCompare(a))
+    .map((key) => {
+      const [year, month] = key.split("-")
+      const days = Object.keys(groups[key])
+        .sort((a, b) => b.localeCompare(a))
+        .map((day) => ({ day, entries: groups[key][day] }))
+      return { label: `${monthNames[Number(month) - 1]} ${year}`, days }
+    })
+}
+
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
   const [books, setBooks] = useState([])
@@ -71,7 +95,9 @@ function App() {
 
   const shelfBooks = books
     .filter((b) => b.status === shelf)
-    .sort((a, b) => b.dateRead.localeCompare(a.dateRead))
+    .sort((a, b) => (b.dateRead||"").localeCompare(a.dateRead||""))
+
+  const diaryGroups = shelf === "read" ? groupDiaryByMonth(shelfBooks) : null
 
   return (
     <>
@@ -143,7 +169,7 @@ function App() {
 					{editingId !== null ? "Save" : "Add"}
 				</button>
 			</form>
-			<div className="tabs">
+			<div className="tabs-main">
 				<button className={shelf === "read" ? "active" : ""} onClick={() => setShelf("read")}>
 					Diary
 				</button>

@@ -44,6 +44,10 @@ h1 {
   margin: 0;
 }
 
+h2 {
+  color: var(--app-text);
+}
+
 .theme-toggle {
   border: 1px solid var(--border);
   background: transparent;
@@ -119,6 +123,30 @@ textarea {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.tabs-main {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.tabs-main button {
+  background: transparent;
+  border: none;
+  color: var(--app-text);
+  opacity: 0.6;
+  padding: 0.5rem 0.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tabs-main button.active {
+  opacity: 1;
+  border-bottom: 2px solid var(--accent);
 }
 
 .tabs-secondary {
