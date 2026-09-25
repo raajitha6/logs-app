@@ -38,6 +38,11 @@ function App() {
   const [shelf, setShelf] = useState("read")
   const [editingId, setEditingId] = useState(null)
   const [view, setView] = useState("list")
+  const [query, setQuery] = useState("")
+  const [results, setResults] = useState([])
+  const [searching, setSearching] = useState(false)
+  const [searchError, setSearchError] = useState("")
+  const [coverUrl, setCoverUrl] = useState("")
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -52,6 +57,7 @@ function App() {
     setReview("")
     setDateRead("")
     setStatus(shelf)
+    setCoverUrl("")
   }
 
   function handleSubmit(e) {
@@ -61,6 +67,7 @@ function App() {
       title,
       author,
       status,
+      coverUrl,
       rating: isRead ? rating : null,
       review: isRead ? review : "",
       dateRead: isRead ? dateRead : "",
@@ -86,11 +93,40 @@ function App() {
     setRating(book.rating ?? 5)
     setReview(book.review)
     setDateRead(book.dateRead)
+    setCoverUrl(book.coverUrl || "")
   }
 
   function handleMarkRead(book) {
     handleEdit(book)
     setStatus("read")
+  }  
+
+  async function handleSearch(e) {
+    e.preventDefault()
+    if (!query.trim()) return
+
+    setSearching(true)
+    setSearchError("")
+
+    try {
+      const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`)
+      if (!response.ok) throw new Error("Search failed")
+      const data = await response.json()
+      setResults(data.docs.slice(0, 10))
+    } catch (err) {
+      setSearchError("Couldn't fetch results. Try again.")
+      setResults([])
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  function handleSelectResult(book) {
+    setTitle(book.title)
+    setAuthor(book.author_name ? book.author_name[0] : "")
+    setCoverUrl(book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : "")
+    setResults([])
+    setQuery("")
   }
 
   const shelfBooks = books
@@ -107,6 +143,32 @@ function App() {
         {theme === "light" ? "Dark mode" : "Light mode"}
       </button>
       </div>
+
+      <form onSubmit={handleSearch} className='search-form'>
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder='Search a book'/>
+        <button className='btn btn-primary' type='submit'>{searching? "Searching..":"Search"}</button>
+      </form>
+
+      {searchError && <p className="search-error">{searchError}</p>}
+
+      {results.length > 0 && (
+        <div className="search-results">
+          {results.map((book) => (
+            <div key={book.key} className="search-result" onClick={() => handleSelectResult(book)}>
+              {book.cover_i ? (
+                <img src={`https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg`} alt={book.title} />
+              ) : (
+                <div className="cover-placeholder" />
+              )}
+              <div>
+                <strong>{book.title}</strong>
+                <p className="dim">{book.author_name ? book.author_name[0] : "Unknown author"}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
 
       <form onSubmit={handleSubmit} className="book-form">
 				<div className="form-row">
@@ -197,6 +259,7 @@ function App() {
             rating={book.rating}
             review={book.review}
             dateRead={book.dateRead}
+            coverUrl={book.coverUrl}
             onDelete={() => handleDelete(book.id)}
             onEdit={() => handleEdit(book)}
             onMarkRead={() => handleMarkRead(book)}

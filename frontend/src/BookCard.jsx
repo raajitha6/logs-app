@@ -1,6 +1,11 @@
-function BookCard({ title, author, status, rating, review, dateRead, onEdit, onDelete, onMarkRead }) {
+function BookCard({ title, author, status, rating, review, dateRead, coverUrl, onEdit, onDelete, onMarkRead }) {
   return (
     <div className="book-card">
+      {coverUrl ? (
+        <img src={coverUrl} alt={title} className="cover" />
+      ) : (
+        <div className="cover-placeholder" />
+      )}
       <h2>{title}</h2>
       <p>{author}</p>
       {rating !== null && <p>Rating: {rating}/5</p>}
