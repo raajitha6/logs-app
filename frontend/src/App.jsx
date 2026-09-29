@@ -237,6 +237,8 @@ function App() {
 					{editingId !== null ? "Save" : "Add"}
 				</button>
 			</form>
+
+      
 			<div className="tabs-main">
 				<button className={shelf === "read" ? "active" : ""} onClick={() => setShelf("read")}>
 					Diary
