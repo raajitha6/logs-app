@@ -28,7 +28,10 @@ function groupDiaryByMonth(books) {
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
-  const [books, setBooks] = useState([])
+  const [books, setBooks] = useState(() => {
+    const saved = localStorage.getItem("books")
+    return saved ? JSON.parse(saved) : []
+  })
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
   const [review, setReview] = useState("")
@@ -48,6 +51,9 @@ function App() {
     document.documentElement.dataset.theme = theme
     localStorage.setItem("theme", theme)
   }, [theme])
+  useEffect(() => {
+    localStorage.setItem("books", JSON.stringify(books))
+  }, [books])
 
   function resetForm() {
     setEditingId(null)
