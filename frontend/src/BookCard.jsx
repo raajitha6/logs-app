@@ -10,7 +10,6 @@ function BookCard({ book, onClick }) {
       <p>{book.author}</p>
       {book.rating !== null && <p>Rating: {book.rating}/5</p>}
       {book.dateRead && <p>Read on: {book.dateRead}</p>}
-      {review && <p>Review: {review}</p>}
     </div>
   )
 }
