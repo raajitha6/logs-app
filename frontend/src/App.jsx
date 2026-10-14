@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import BookCard from './BookCard'
+import BookDetailPanel from './BookDetailPanel'
 
 const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
@@ -132,9 +133,6 @@ function App() {
       )}
 
 
-      
-
-
 			<div className="tabs-main">
 				<button className={shelf === "read" ? "active" : ""} onClick={() => setShelf("read")}>
 					Diary
@@ -157,6 +155,16 @@ function App() {
           <BookCard key={book.id} book={book} onClick={() => setEditingBookId(book.id)}/>
         ))}
       </div>
+
+      {editingBook && (
+        <BookDetailPanel
+          book={editingBook}
+          onChange={(changes) => updateBook(editingBook.id, changes)}
+          onDelete={() => handleDelete(editingBook.id)}
+          onClose={() => setEditingBookId(null)}
+          onMarkRead={() => handleMarkRead(editingBook.id)}
+        />
+      )}
     </>
   )
 }
