@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import BookCard from './BookCard'
 import BookDetailPanel from './BookDetailPanel'
+import AddBookPanel from './AddBookPanel'
 
 const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
@@ -64,6 +65,16 @@ function App() {
     updateBook(id, {status:"read", dateRead:new Date().toISOString().slice(0,10) })
   }
 
+  function handleAddToDiary(fields){
+    setBooks([...books, { id: Date.now(), ...fields, status: "read", rating: null, review: "" }])
+    setPanelBook(null)
+  }
+
+  function handleAddToReadlist(fields){
+    setBooks([...books, { id: Date.now(), ...fields, status: "want", dateRead: "", rating: null, review: "" }])
+    setPanelBook(null)
+  }
+
   async function handleSearch(e) {
     e.preventDefault()
     if (!query.trim()) return
@@ -85,7 +96,11 @@ function App() {
   }
 
   function handleSelectResult(book) {
-    console.log("selected:", book.title)
+    setPanelBook({
+      title: book.title,
+      author: book.author_name ? book.author_name[0] : "",
+      coverUrl: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : "",
+  })
     setResults([])
     setQuery("")
   }
@@ -111,6 +126,10 @@ function App() {
         <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder='Search a book'/>
         <button className='btn btn-primary' type='submit'>{searching? "Searching..":"Search"}</button>
       </form>
+      <button className="btn-secondary" onClick={() => setPanelBook({ title: "", author: "", coverUrl: "" })}>
+        Add manually
+      </button>
+
 
       {searchError && <p className="search-error">{searchError}</p>}
 
@@ -152,7 +171,7 @@ function App() {
 
       <div className={`books ${view}`}>
         {shelfBooks.map((book) => (
-          <BookCard key={book.id} book={book} onClick={() => setEditingBookId(book.id)}/>
+          <BookCard key={book.id} book={book} onClick={() => { console.log("clicked", book.id); setEditingBookId(book.id)}}/>
         ))}
       </div>
 
@@ -163,6 +182,14 @@ function App() {
           onDelete={() => handleDelete(editingBook.id)}
           onClose={() => setEditingBookId(null)}
           onMarkRead={() => handleMarkRead(editingBook.id)}
+        />
+      )}
+
+      {panelBook && (
+        <AddBookPanel book={panelBook}
+          onAddDiary={handleAddToDiary}
+          onAddReadlist={handleAddToReadlist}
+          onClose={() => setPanelBook(null) }
         />
       )}
     </>

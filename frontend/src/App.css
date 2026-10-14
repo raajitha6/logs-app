@@ -323,3 +323,18 @@ textarea {
   cursor: pointer;
   margin-top: 0.5rem;
 }
+
+.panel-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--app-text);
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
