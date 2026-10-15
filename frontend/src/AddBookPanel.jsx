@@ -1,9 +1,12 @@
 import { useState } from "react";
+import StarRating from "./StarRating";
 
 function AddBookPanel({ book, onAddDiary, onAddReadlist, onClose }) {
   const [title, setTitle] = useState(book.title)
   const [author, setAuthor] = useState(book.author)
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [rating, setRating] = useState(5)
+  const [review, setReview] = useState("")
 
   return (
     <div className="panel-overlay" onClick={onClose}>
@@ -18,10 +21,14 @@ function AddBookPanel({ book, onAddDiary, onAddReadlist, onClose }) {
         <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Author" />
         <label>Date read</label>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <label>Rating</label>
+        <StarRating value={rating} onChange={setRating} />
+        <label>Review</label>
+        <textarea value={review} onChange={(e) => setReview(e.target.value)} placeholder="Share your thoughts" />
         <div className="panel-actions">
           <button
             className="btn-primary"
-            onClick={() => onAddDiary({ title, author, coverUrl: book.coverUrl, dateRead: date })}
+            onClick={() => onAddDiary({ title, author, coverUrl: book.coverUrl, dateRead: date, rating, review })}
           >
             Add to Diary
           </button>

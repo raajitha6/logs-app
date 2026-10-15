@@ -66,7 +66,7 @@ function App() {
   }
 
   function handleAddToDiary(fields){
-    setBooks([...books, { id: Date.now(), ...fields, status: "read", rating: null, review: "" }])
+    setBooks([...books, { id: Date.now(), ...fields, status: "read"}])
     setPanelBook(null)
   }
 
