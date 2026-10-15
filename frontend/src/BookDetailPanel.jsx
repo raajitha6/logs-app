@@ -1,3 +1,5 @@
+import StarRating from "./StarRating"
+
 function BookDetailPanel({ book, onChange, onDelete, onClose, onMarkRead }) {
   return (
     <div className="panel-overlay" onClick={onClose}>
@@ -14,13 +16,7 @@ function BookDetailPanel({ book, onChange, onDelete, onClose, onMarkRead }) {
         {book.status === "read" && (
           <>
             <label>Rating</label>
-            <input
-              type="number"
-              min="1"
-              max="5"
-              value={book.rating ?? ""}
-              onChange={(e) => onChange({ rating: e.target.value ? Number(e.target.value) : null })}
-            />
+            <StarRating value={book.rating} onChange={(n) => onChange({ rating: n })} />
             <label>Date read</label>
             <input type="date" value={book.dateRead} onChange={(e) => onChange({ dateRead: e.target.value })} />
             <label>Review</label>

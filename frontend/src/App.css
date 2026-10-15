@@ -338,3 +338,7 @@ textarea {
   border-radius: 6px;
   cursor: pointer;
 }
+
+.star-rating { display: flex; gap: 0.2rem; font-size: 1.4rem; cursor: pointer; }
+.star { color: var(--border); }
+.star.filled { color: var(--accent); }
