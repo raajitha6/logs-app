@@ -5,7 +5,7 @@ import BookDetailPanel from './BookDetailPanel'
 import AddBookPanel from './AddBookPanel'
 
 {/*
-  const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
 function groupDiaryByMonth(books) {
   const groups = {}
@@ -113,7 +113,7 @@ function App() {
 
   const editingBook = books.find((b) => b.id === editingBookId) || null
 
-  const diaryGroups = shelf === "read" ? groupDiaryByMonth(shelfBooks) : null
+  {/*const diaryGroups = shelf === "read" ? groupDiaryByMonth(shelfBooks) : null*/}
 
   return (
     <>
