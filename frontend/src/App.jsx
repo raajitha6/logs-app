@@ -4,7 +4,6 @@ import BookCard from './BookCard'
 import BookDetailPanel from './BookDetailPanel'
 import AddBookPanel from './AddBookPanel'
 
-{/*
 const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
 function groupDiaryByMonth(books) {
@@ -28,7 +27,7 @@ function groupDiaryByMonth(books) {
       return { label: `${monthNames[Number(month) - 1]} ${year}`, days }
     })
 }
-*/}
+
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
@@ -113,7 +112,7 @@ function App() {
 
   const editingBook = books.find((b) => b.id === editingBookId) || null
 
-  {/*const diaryGroups = shelf === "read" ? groupDiaryByMonth(shelfBooks) : null*/}
+  const diaryGroups = shelf === "read" ? groupDiaryByMonth(shelfBooks) : null
 
   return (
     <>
@@ -162,6 +161,8 @@ function App() {
 					Readlist
 				</button>
 			</div>
+
+      {shelf === "want" && (
 			<div className="tabs tabs-secondary">
 				<button className={view === "list" ? "active" : ""} onClick={() => setView("list")}>
 					List
@@ -170,12 +171,31 @@ function App() {
 					Grid
 				</button>
 			</div>
+      )}
 
-      <div className={`books ${view}`}>
-        {shelfBooks.map((book) => (
-          <BookCard key={book.id} book={book} onClick={() => { console.log("clicked", book.id); setEditingBookId(book.id)}}/>
-        ))}
-      </div>
+      {shelf === "read" ? (
+        <div className="diary">
+          {diaryGroups.map((group) => (
+            <div key={group.label} className="month-group">
+              <div className="month-header">{group.label}</div>
+              {group.days.map(({ day, entries }) =>
+                entries.map((book) => (
+                  <div key={book.id} className="diary-row" onClick={() => setEditingBookId(book.id)}>
+                    <div className="diary-date">{day}</div>
+                    <BookCard book={book} onClick={() => setEditingBookId(book.id)} />
+                  </div>
+                ))
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`books ${view}`}>
+          {shelfBooks.map((book) => (
+            <BookCard key={book.id} book={book} onClick={() => setEditingBookId(book.id)} />
+          ))}
+        </div>
+      )}
 
       {editingBook && (
         <BookDetailPanel
