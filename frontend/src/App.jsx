@@ -4,7 +4,8 @@ import BookCard from './BookCard'
 import BookDetailPanel from './BookDetailPanel'
 import AddBookPanel from './AddBookPanel'
 
-const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+{/*
+  const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
 function groupDiaryByMonth(books) {
   const groups = {}
@@ -27,6 +28,7 @@ function groupDiaryByMonth(books) {
       return { label: `${monthNames[Number(month) - 1]} ${year}`, days }
     })
 }
+*/}
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
