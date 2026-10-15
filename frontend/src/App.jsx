@@ -180,9 +180,9 @@ function App() {
               <div className="month-header">{group.label}</div>
               {group.days.map(({ day, entries }) =>
                 entries.map((book) => (
-                  <div key={book.id} className="diary-row" onClick={() => setEditingBookId(book.id)}>
+                  <div key={book.id} className="diary-row">
                     <div className="diary-date">{day}</div>
-                    <BookCard book={book} onClick={() => setEditingBookId(book.id)} />
+                    <BookCard book={book} onClick={() => setEditingBookId(book.id)} compact />
                   </div>
                 ))
               )}

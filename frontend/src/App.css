@@ -342,6 +342,68 @@ textarea {
 .star-rating { display: flex; gap: 0.2rem; font-size: 1.4rem; cursor: pointer; }
 .star { color: var(--border); }
 .star.filled { color: var(--accent); }
-.month-header { font-size: 0.75rem; letter-spacing: 0.05em; opacity: 0.6; margin: 1.25rem 0 0.4rem; }
-.diary-row { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
-.diary-date { width: 1.75rem; text-align: center; opacity: 0.6; font-size: 0.9rem; }
+
+.diary {
+  border-top: 1px solid var(--border);
+}
+
+.month-header {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0.55;
+  padding: 1rem 0 0.4rem;
+}
+
+.diary-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.diary-date {
+  width: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
+.book-card-compact {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.cover-tiny, .cover-placeholder-tiny {
+  width: 32px;
+  height: 46px;
+  object-fit: cover;
+  border-radius: 3px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.compact-info {
+  flex: 1;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-info .dim {
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
+.rating-stars {
+  color: var(--accent);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

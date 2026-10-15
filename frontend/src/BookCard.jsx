@@ -1,4 +1,21 @@
-function BookCard({ book, onClick }) {
+function BookCard({ book, onClick, compact }) {
+  if (compact) {
+    return (
+      <div className="book-card-compact" onClick={onClick}>
+        {book.coverUrl ? (
+          <img src={book.coverUrl} alt={book.title} className="cover-tiny" />
+        ) : (
+          <div className="cover-placeholder-tiny" />
+        )}
+        <div className="compact-info">
+          <strong>{book.title}</strong>
+          <span className="dim"> {book.author}</span>
+        </div>
+        {book.rating !== null && <span className="rating-stars">{"★".repeat(book.rating)}</span>}
+      </div>
+    )
+  }
+
   return (
     <div className="book-card" onClick={onClick}>
       {book.coverUrl ? (
