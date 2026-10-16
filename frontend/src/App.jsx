@@ -55,8 +55,22 @@ function App() {
     localStorage.setItem("books", JSON.stringify(books))
   }, [books])
 
-  function updateBook(id, changes) {
-    setBooks(books.map((b) => (b.id === id ? { ...b, ...changes } : b)))
+  async function updateBook(id, changes) {
+    const body = {}
+    if ("title" in changes) body.title = changes.title
+    if ("author" in changes) body.author = changes.author
+    if ("coverUrl" in changes) body.cover_url = changes.coverUrl
+    if ("status" in changes) body.status = changes.status
+    if ("rating" in changes) body.rating = changes.rating
+    if ("review" in changes) body.review = changes.review
+    if ("dateRead" in changes) body.date_read = changes.dateRead
+    const response = await fetch(`http://127.0.0.1:8000/entries/${id}`,{
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+    const updated = await response.json()
+    setBooks(books.map((b) => (b.id === id ? { ...updated, coverUrl: updated.cover_url, dateRead: updated.date_read } : b)))
   }
 
   function handleDelete(id) {
