@@ -73,7 +73,8 @@ function App() {
     setBooks(books.map((b) => (b.id === id ? { ...updated, coverUrl: updated.cover_url, dateRead: updated.date_read } : b)))
   }
 
-  function handleDelete(id) {
+  async function handleDelete(id) {
+    await fetch(`http://127.0.0.1:8000/entries/${id}`, { method: "DELETE" })
     setBooks(books.filter((b) => b.id !== id))
     if (id === editingBookId) setEditingBookId(null)
   } 
