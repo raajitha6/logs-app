@@ -31,10 +31,12 @@ function groupDiaryByMonth(books) {
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
-  const [books, setBooks] = useState(() => {
-    const saved = localStorage.getItem("books")
-    return saved ? JSON.parse(saved) : []
-  })
+  const [books, setBooks] = useState([])
+  useEffect(()=>{
+    fetch('http://127.0.0.1:8000/entries')
+    .then((res)=> res.json())
+    .then((data)=> setBooks(data.map((b) => ({...b, coverUrl: b.cover_url, dateRead: b.date_read}))))
+  }, [])
   const [shelf, setShelf] = useState("read")
   const [view, setView] = useState("list")
   const [query, setQuery] = useState("")
