@@ -68,13 +68,41 @@ function App() {
     updateBook(id, {status:"read", dateRead:new Date().toISOString().slice(0,10) })
   }
 
-  function handleAddToDiary(fields){
-    setBooks([...books, { id: Date.now(), ...fields, status: "read"}])
+  async function handleAddToDiary(fields){
+    const response = await fetch('http://127.0.0.1:8000/entries', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        title: fields.title,
+        author: fields.author,
+        cover_url: fields.coverUrl,
+        status: 'read',
+        rating: fields.rating,
+        review: fields.review,
+        date_read: fields.dateRead,
+      }),
+    })
+    const newEntry = await response.json()
+    setBooks([...books, { ...newEntry, coverUrl: newEntry.cover_url, dateRead: newEntry.date_read }])
     setPanelBook(null)
   }
 
-  function handleAddToReadlist(fields){
-    setBooks([...books, { id: Date.now(), ...fields, status: "want", dateRead: "", rating: null, review: "" }])
+  async function handleAddToReadlist(fields){
+    const response = await fetch('http://127.0.0.1:8000/entries', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        title: fields.title,
+        author: fields.author,
+        cover_url: fields.coverUrl,
+        status: 'want',
+        rating: null,
+        review: '',
+        date_read: '',
+      }),
+    })
+    const newEntry= await response.json()
+    setBooks([...books, { ...newEntry, coverUrl: newEntry.cover_url, dateRead: newEntry.date_read }])
     setPanelBook(null)
   }
 
