@@ -4,7 +4,7 @@ import BookCard from './BookCard'
 import BookDetailPanel from './BookDetailPanel'
 import AddBookPanel from './AddBookPanel'
 
-const API_URL = "http://127.0.0.1:8000"
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
 function groupDiaryByMonth(books) {
