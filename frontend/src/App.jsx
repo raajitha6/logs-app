@@ -186,12 +186,17 @@ function App() {
   return (
     <>
       <div className='topbar'>
-        <h1>My Bookshelf</h1>
+        <h1 className='app-title'>My Bookshelf</h1>
         <div className='topbar-actions'>
-          <button className='theme-toggle' onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-              {theme === "light" ? "Dark mode" : "Light mode"}
+          <button
+            className='icon-btn'
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            aria-label="Toggle theme"
+            title={theme === "light" ? "Dark mode" : "Light mode"}
+          >
+            {theme === "light" ? "☾" : "☀"}
           </button>
-          <button className='theme-toggle' onClick={handleLogout}>Log out</button>
+          <button className='logout-btn' onClick={handleLogout}>Log out</button>
         </div>
       </div>
 
