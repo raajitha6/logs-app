@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
+from werkzeug.security import generate_password_hash
 
 app = FastAPI()
 
@@ -17,10 +18,6 @@ app.add_middleware(
 @app.get('/health')
 def health():
     return {'status': 'cool'}
-
-@app.get('/hello/{name}')
-def hello(name):
-    return {'message':f'Hello {name}!'}
 
 @app.get('/entries', response_model=list[schemas.EntryOut])
 def list_entries(db: Session = Depends(get_db)):
@@ -53,3 +50,21 @@ def delete_entry(entry_id:int, db:Session= Depends(get_db)):
     db.delete(db_entry)
     db.commit()
     return {'ok': True}
+
+@app.post("/signup", response_model=schemas.UserOut, status_code=201)
+def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    existing = db.query(models.User).filter(
+        (models.User.username == user.username) | (models.User.email == user.email)
+    ).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Username or email already taken")
+
+    db_user = models.User(
+        username=user.username,
+        email=user.email,
+        password_hash=generate_password_hash(user.password),
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
