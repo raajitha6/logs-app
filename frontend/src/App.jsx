@@ -3,8 +3,9 @@ import './App.css'
 import BookCard from './BookCard'
 import BookDetailPanel from './BookDetailPanel'
 import AddBookPanel from './AddBookPanel'
+import AuthScreen from './AuthScreen'
+import { authFetch, getToken, setToken } from './api'
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
 function groupDiaryByMonth(books) {
@@ -33,11 +34,6 @@ function groupDiaryByMonth(books) {
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
   const [books, setBooks] = useState([])
-  useEffect(()=>{
-    fetch(`${API_URL}/entries`)
-    .then((res)=> res.json())
-    .then((data)=> setBooks(data.map((b) => ({...b, coverUrl: b.cover_url, dateRead: b.date_read}))))
-  }, [])
   const [shelf, setShelf] = useState("read")
   const [view, setView] = useState("list")
   const [query, setQuery] = useState("")
@@ -46,6 +42,14 @@ function App() {
   const [searchError, setSearchError] = useState("")
   const [panelBook, setPanelBook] = useState(null)
   const [editingBookId, setEditingBookId] = useState(null)
+  const [token, setTokenState] = useState(() => getToken())
+
+  useEffect(() => {
+    if (!token) return
+    authFetch("/entries")
+      .then((res) => res.json())
+      .then((data) => setBooks(data.map((b) => ({ ...b, coverUrl: b.cover_url, dateRead: b.date_read }))))
+  }, [token])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -65,9 +69,8 @@ function App() {
     if ("rating" in changes) body.rating = changes.rating
     if ("review" in changes) body.review = changes.review
     if ("dateRead" in changes) body.date_read = changes.dateRead
-    const response = await fetch(`${API_URL}/entries/${id}`,{
+    const response = await authFetch(`/entries/${id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     })
     const updated = await response.json()
@@ -75,7 +78,7 @@ function App() {
   }
 
   async function handleDelete(id) {
-    const response = await fetch(`${API_URL}/entries/${id}`, { method: "DELETE" })
+    const response = await authFetch(`/entries/${id}`, { method: "DELETE" })
     if (!response.ok) return
     setBooks(books.filter((b) => b.id !== id))
     if (id === editingBookId) setEditingBookId(null)
@@ -86,9 +89,8 @@ function App() {
   }
 
   async function handleAddToDiary(fields){
-    const response = await fetch(`${API_URL}/entries`, {
+    const response = await authFetch(`/entries`, {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         title: fields.title,
         author: fields.author,
@@ -105,9 +107,8 @@ function App() {
   }
 
   async function handleAddToReadlist(fields){
-    const response = await fetch(`${API_URL}/entries`, {
+    const response = await authFetch(`/entries`, {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         title: fields.title,
         author: fields.author,
@@ -161,6 +162,10 @@ function App() {
 
   const diaryGroups = shelf === "read" ? groupDiaryByMonth(shelfBooks) : null
 
+  if (!token) {
+    return <AuthScreen onAuth={(t) => { setToken(t); setTokenState(t) }} />
+  }
+  
   return (
     <>
       <div className='topbar'>
