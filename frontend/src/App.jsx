@@ -4,7 +4,7 @@ import BookCard from './BookCard'
 import BookDetailPanel from './BookDetailPanel'
 import AddBookPanel from './AddBookPanel'
 import AuthScreen from './AuthScreen'
-import { authFetch, getToken, setToken } from './api'
+import { authFetch, getToken, setToken, clearToken } from './api'
 
 const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
@@ -45,13 +45,6 @@ function App() {
   const [token, setTokenState] = useState(() => getToken())
 
   useEffect(() => {
-    if (!token) return
-    authFetch("/entries")
-      .then((res) => res.json())
-      .then((data) => setBooks(data.map((b) => ({ ...b, coverUrl: b.cover_url, dateRead: b.date_read }))))
-  }, [token])
-
-  useEffect(() => {
     document.documentElement.dataset.theme = theme
     localStorage.setItem("theme", theme)
   }, [theme])
@@ -59,6 +52,18 @@ function App() {
   useEffect(() => {
     localStorage.setItem("books", JSON.stringify(books))
   }, [books])
+
+  useEffect(() => {
+    if (!token) return
+    authFetch("/entries")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => setBooks(data.map((b) => ({ ...b, coverUrl: b.cover_url, dateRead: b.date_read }))))
+  }, [token])
+
+  useEffect(() => {
+    window.addEventListener("auth:logout", handleLogout)
+    return () => window.removeEventListener("auth:logout", handleLogout)
+  }, [])
 
   async function updateBook(id, changes) {
     const body = {}
@@ -73,6 +78,7 @@ function App() {
       method: "PATCH",
       body: JSON.stringify(body),
     })
+    if (!response.ok) return
     const updated = await response.json()
     setBooks(books.map((b) => (b.id === id ? { ...updated, coverUrl: updated.cover_url, dateRead: updated.date_read } : b)))
   }
@@ -82,7 +88,16 @@ function App() {
     if (!response.ok) return
     setBooks(books.filter((b) => b.id !== id))
     if (id === editingBookId) setEditingBookId(null)
-  } 
+  }
+
+  function handleLogout() {
+    clearToken()
+    setTokenState(null)
+    setBooks([])
+    setEditingBookId(null)
+    setPanelBook(null)
+    setResults([])
+  }
 
   function handleMarkRead(id){
     updateBook(id, {status:"read", dateRead:new Date().toISOString().slice(0,10) })
@@ -101,6 +116,7 @@ function App() {
         date_read: fields.dateRead,
       }),
     })
+    if (!response.ok) return
     const newEntry = await response.json()
     setBooks([...books, { ...newEntry, coverUrl: newEntry.cover_url, dateRead: newEntry.date_read }])
     setPanelBook(null)
@@ -119,6 +135,7 @@ function App() {
         date_read: '',
       }),
     })
+    if (!response.ok) return
     const newEntry= await response.json()
     setBooks([...books, { ...newEntry, coverUrl: newEntry.cover_url, dateRead: newEntry.date_read }])
     setPanelBook(null)
@@ -165,14 +182,17 @@ function App() {
   if (!token) {
     return <AuthScreen onAuth={(t) => { setToken(t); setTokenState(t) }} />
   }
-  
+
   return (
     <>
       <div className='topbar'>
-      <h1>My Bookshelf</h1>
-      <button className='theme-toggle' onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-        {theme === "light" ? "Dark mode" : "Light mode"}
-      </button>
+        <h1>My Bookshelf</h1>
+        <div className='topbar-actions'>
+          <button className='theme-toggle' onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+              {theme === "light" ? "Dark mode" : "Light mode"}
+          </button>
+          <button className='theme-toggle' onClick={handleLogout}>Log out</button>
+        </div>
       </div>
 
       <form onSubmit={handleSearch} className='search-form'>

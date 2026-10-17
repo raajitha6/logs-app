@@ -479,3 +479,5 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-width: 320px;
   margin: 4rem auto 0;
 }
+
+.topbar-actions { display: flex; gap: 0.5rem; }
