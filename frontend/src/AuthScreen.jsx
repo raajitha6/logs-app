@@ -40,8 +40,14 @@ function AuthScreen({ onAuth }){
   }
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <h1>{mode === "login" ? "Log in" : "Sign up"}</h1>
+  <div className="auth-page">
+    <div className="auth-hero">
+      <div className="auth-logo">Chronicle</div>
+      <p className="auth-tagline">Log the books you read. Keep the ones you love.</p>
+    </div>
+
+    <form className="auth-card" onSubmit={handleSubmit}>
+      <h2>{mode === "login" ? "Welcome back" : "Create your account"}</h2>
       <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required />
       {mode === "signup" && (
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
@@ -59,7 +65,8 @@ function AuthScreen({ onAuth }){
         {mode === "login" ? "No account? Sign up" : "Have an account? Log in"}
       </button>
     </form>
-  )
+  </div>
+    )
 }
 
 export default AuthScreen
