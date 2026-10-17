@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from werkzeug.security import generate_password_hash, check_password_hash
-from auth import create_access_token
+from auth import create_access_token, get_current_user
 
 app = FastAPI()
 
@@ -20,37 +20,41 @@ app.add_middleware(
 def health():
     return {'status': 'cool'}
 
-@app.get('/entries', response_model=list[schemas.EntryOut])
-def list_entries(db: Session = Depends(get_db)):
-    return db.query(models.Entry).all()
+@app.get("/entries", response_model=list[schemas.EntryOut])
+def list_entries(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    return db.query(models.Entry).filter(models.Entry.user_id == current_user.id).all()
 
-@app.post('/entries', response_model=schemas.EntryOut)
-def create_entry(entry: schemas.EntryCreate, db: Session = Depends(get_db)):
-    db_entry = models.Entry(**entry.model_dump())
+@app.post("/entries", response_model=schemas.EntryOut)
+def create_entry(entry: schemas.EntryCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    db_entry = models.Entry(**entry.model_dump(), user_id=current_user.id)
     db.add(db_entry)
     db.commit()
     db.refresh(db_entry)
     return db_entry
 
 @app.patch("/entries/{entry_id}", response_model=schemas.EntryOut)
-def update_entry(entry_id: int, entry: schemas.EntryUpdate, db: Session = Depends(get_db)):
-    db_entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
+def update_entry(entry_id: int, entry: schemas.EntryUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    db_entry = db.query(models.Entry).filter(
+        models.Entry.id == entry_id, models.Entry.user_id == current_user.id
+    ).first()
     if not db_entry:
-        raise HTTPException(status_code=404, detail='Entry not found')
-    for key, val in entry.model_dump(exclude_unset=True).items():
-        setattr(db_entry, key, val)
+        raise HTTPException(status_code=404, detail="Entry not found")
+    for key, value in entry.model_dump(exclude_unset=True).items():
+        setattr(db_entry, key, value)
     db.commit()
     db.refresh(db_entry)
     return db_entry
 
-@app.delete('/entries/{entry_id}')
-def delete_entry(entry_id:int, db:Session= Depends(get_db)):
-    db_entry= db.query(models.Entry).filter(models.Entry.id == entry_id).first()
+@app.delete("/entries/{entry_id}")
+def delete_entry(entry_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    db_entry = db.query(models.Entry).filter(
+        models.Entry.id == entry_id, models.Entry.user_id == current_user.id
+    ).first()
     if not db_entry:
-        raise HTTPException(status_code=404, detail='Entry not found')
+        raise HTTPException(status_code=404, detail="Entry not found")
     db.delete(db_entry)
     db.commit()
-    return {'ok': True}
+    return {"ok": True}
 
 @app.post("/signup", response_model=schemas.UserOut, status_code=201)
 def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):

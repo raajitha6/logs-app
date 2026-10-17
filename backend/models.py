@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, func
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, func
 from database import Base
 
 class Entry(Base):
@@ -12,6 +12,7 @@ class Entry(Base):
     rating = Column(Integer, nullable=True)
     review = Column(Text, nullable=True)
     date_read = Column(String, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
 
 class User(Base):
     __tablename__ = "users"
