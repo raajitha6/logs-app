@@ -2,7 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+from auth import create_access_token
 
 app = FastAPI()
 
@@ -68,3 +69,10 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+@app.post("/login", response_model=schemas.Token)
+def login(credentials: schemas.LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.username == credentials.username).first()
+    if not user or not check_password_hash(user.password_hash, credentials.password):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    return {"access_token": create_access_token(user.id)}
