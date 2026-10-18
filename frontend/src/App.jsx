@@ -4,7 +4,7 @@ import BookCard from './BookCard'
 import BookDetailPanel from './BookDetailPanel'
 import AddBookPanel from './AddBookPanel'
 import AuthScreen from './AuthScreen'
-import { authFetch, getToken, setToken, clearToken } from './api'
+import { authFetch } from './api'
 
 const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
 
@@ -42,7 +42,7 @@ function App() {
   const [searchError, setSearchError] = useState("")
   const [panelBook, setPanelBook] = useState(null)
   const [editingBookId, setEditingBookId] = useState(null)
-  const [token, setTokenState] = useState(() => getToken())
+  const [authed, setAuthed] = useState(null)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -54,15 +54,19 @@ function App() {
   }, [books])
 
   useEffect(() => {
-    if (!token) return
+    if (!authed) return
     authFetch("/entries")
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => setBooks(data.map((b) => ({ ...b, coverUrl: b.cover_url, dateRead: b.date_read }))))
-  }, [token])
+  }, [authed])
 
   useEffect(() => {
-    window.addEventListener("auth:logout", handleLogout)
-    return () => window.removeEventListener("auth:logout", handleLogout)
+    window.addEventListener("auth:logout", clearSession)
+    return () => window.removeEventListener("auth:logout", clearSession)
+  }, [])
+
+  useEffect(() => {
+    authFetch("/me").then((res) => setAuthed(res.ok)).catch(() => setAuthed(false))
   }, [])
 
   async function updateBook(id, changes) {
@@ -90,13 +94,20 @@ function App() {
     if (id === editingBookId) setEditingBookId(null)
   }
 
-  function handleLogout() {
-    clearToken()
-    setTokenState(null)
+  function clearSession() {
+    setAuthed(false)
     setBooks([])
     setEditingBookId(null)
     setPanelBook(null)
     setResults([])
+  }
+
+  async function handleLogout() {
+    try {
+      await authFetch("/logout", { method: "POST" })
+    } finally {
+      clearSession()
+    }
   }
 
   function handleMarkRead(id){
@@ -179,9 +190,8 @@ function App() {
 
   const diaryGroups = shelf === "read" ? groupDiaryByMonth(shelfBooks) : null
 
-  if (!token) {
-    return <AuthScreen onAuth={(t) => { setToken(t); setTokenState(t) }} />
-  }
+  if (authed === null) return null
+  if (!authed) return <AuthScreen onAuth={() => setAuthed(true)} />
 
   return (
     <>

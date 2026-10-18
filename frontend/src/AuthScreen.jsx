@@ -12,6 +12,7 @@ function AuthScreen({ onAuth }){
   async function post(path, body) {
     const res = await fetch(`${API_URL}${path}`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     })
@@ -30,8 +31,7 @@ function AuthScreen({ onAuth }){
       }
       const res = await post("/login", { username, password })
       if (!res.ok) return setError("Invalid username or password")
-      const data = await res.json()
-      onAuth(data.access_token)
+      onAuth()
     } catch {
       setError("Couldn't reach the server")
     } finally {
