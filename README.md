@@ -51,7 +51,7 @@ Requires a local PostgreSQL database and a `backend/.env` with your own `DATABAS
 - [x] Sprint 0 — stack & setup
 - [x] Sprint 1 — local MVP (CRUD, no backend)
 - [x] Sprint 2 — FastAPI + PostgreSQL
-- [ ] Sprint 3 — auth & profiles
+- [x] Sprint 3 — auth & profiles
 - [ ] Sprint 4 — social features
 - [ ] Sprint 5 — deployment
 
