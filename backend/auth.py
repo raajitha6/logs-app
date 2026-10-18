@@ -1,8 +1,7 @@
 import os
 from datetime import datetime, timedelta, timezone
 import jwt
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Cookie, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 import models
@@ -19,14 +18,14 @@ def create_access_token(user_id: int) -> str:
     payload = {"sub": str(user_id), "exp": expire}
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-bearer_scheme = HTTPBearer()
-
 def get_current_user(
-    creds: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    access_token: str | None = Cookie(default=None),
     db: Session = Depends(get_db),
 ):
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        payload = jwt.decode(creds.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = int(payload["sub"])
     except (jwt.PyJWTError, KeyError, ValueError):
         raise HTTPException(status_code=401, detail="Invalid or expired token")

@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from werkzeug.security import generate_password_hash, check_password_hash
-from auth import create_access_token, get_current_user
+from auth import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 
 app = FastAPI()
 
@@ -13,7 +13,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=['http://localhost:5173'],
     allow_methods=['*'],
-    allow_headers=['*']
+    allow_headers=['*'],
+    allow_credentials=True,
 )
 
 @app.get('/health')
@@ -74,9 +75,27 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-@app.post("/login", response_model=schemas.Token)
-def login(credentials: schemas.LoginRequest, db: Session = Depends(get_db)):
+@app.post("/login", response_model=schemas.UserOut)
+def login(credentials: schemas.LoginRequest, response: Response, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.username == credentials.username).first()
     if not user or not check_password_hash(user.password_hash, credentials.password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    return {"access_token": create_access_token(user.id)}
+    response.set_cookie(
+        key="access_token",
+        value=create_access_token(user.id),
+        httponly=True,
+        samesite="lax",
+        secure=False,  # set True once deployed on HTTPS
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
+    )
+    return user
+
+@app.post("/logout")
+def logout(response: Response):
+    response.delete_cookie("access_token", path="/")
+    return {"ok": True}
+
+@app.get("/me", response_model=schemas.UserOut)
+def me(current_user: models.User = Depends(get_current_user)):
+    return current_user
