@@ -11,7 +11,7 @@
 
 ## ✨ Features
 
-- 🔍 Search books via the Open Library API, or add one manually
+- 🔍 Search books via the app search, or add one manually
 - ⭐ Log ratings, written reviews, and the date you read a book
 - 📖 A readlist for what's next, with one-click "mark as read"
 - 🗓️ Diary view grouped by month and day
