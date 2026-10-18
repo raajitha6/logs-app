@@ -1,34 +1,32 @@
-# Personal reading tracker app
+# 📚 Chronicle
 
-A full-stack app for logging books you've read, rating and reviewing them, and keeping a readlist for what's next — built as a learning project to go from a local, in-browser prototype to a properly deployed full-stack application.
+*A personal reading tracker — like Letterboxd, but for books.*
 
-Inspired by Letterboxd, but for books.
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
+![Status](https://img.shields.io/badge/status-in%20progress-yellow)
 
-## What it does
+---
 
-- Search for a book via the Open Library API, or add one manually
-- Log a book with a star rating, written review, and the date you read it
-- Keep a separate readlist for books you want to read, with a one-click "mark as read" to move it into your diary
-- Browse your diary grouped by month and day, or switch your readlist between a grid and list view
-- Light/dark mode
+## ✨ Features
 
-## Tech stack
+- 🔍 Search books via the Open Library API, or add one manually
+- ⭐ Log ratings, written reviews, and the date you read a book
+- 📖 A readlist for what's next, with one-click "mark as read"
+- 🗓️ Diary view grouped by month and day
+- 🌗 Light / dark mode
 
-- **Frontend:** React (Vite)
-- **Backend:** FastAPI
-- **Database:** PostgreSQL, via SQLAlchemy + Alembic for migrations
-- **Other:** Open Library API for book search and cover art
+## 🛠️ Stack
 
-## Why this stack
+| Layer | Tech |
+|---|---|
+| Frontend | React (Vite) |
+| Backend | FastAPI |
+| Database | PostgreSQL + SQLAlchemy + Alembic |
+| Book data | Open Library API |
 
-Built to strengthen a Python/FastAPI/REST foundation while learning React and modern frontend patterns, as part of an Agile-style, sprint-based build:
-
-- Sprint 0: requirements, stack decision, environment setup
-- Sprint 1: a working local MVP (CRUD, no database — React state + localStorage)
-- Sprint 2: a real database layer (this part — FastAPI + PostgreSQL replacing localStorage)
-- Sprint 3+: auth, profiles, social features, and deployment
-
-## Running it locally
+## 🚀 Running locally
 
 **Backend**
 ```bash
@@ -36,7 +34,7 @@ cd backend
 .venv\Scripts\Activate.ps1
 python -m uvicorn main:app --reload
 ```
-Runs on `http://127.0.0.1:8000` (interactive docs at `/docs`).
+→ `http://127.0.0.1:8000` (docs at `/docs`)
 
 **Frontend**
 ```bash
@@ -44,10 +42,19 @@ cd frontend
 npm install
 npm run dev
 ```
-Runs on `http://localhost:5173`.
+→ `http://localhost:5173`
 
-You'll need a local PostgreSQL database and a `backend/.env` file with your own `DATABASE_URL` (see `database.py`).
+Requires a local PostgreSQL database and a `backend/.env` with your own `DATABASE_URL`.
 
-## Status
+## 🗺️ Roadmap
 
-Actively in progress — currently wiring the frontend to the real backend (Sprint 2).
+- [x] Sprint 0 — stack & setup
+- [x] Sprint 1 — local MVP (CRUD, no backend)
+- [x] Sprint 2 — FastAPI + PostgreSQL
+- [ ] Sprint 3 — auth & profiles
+- [ ] Sprint 4 — social features
+- [ ] Sprint 5 — deployment
+
+---
+
+*Built as a full-stack learning project.*
